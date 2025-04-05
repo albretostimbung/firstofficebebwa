@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('booking_trx_id');
             $table->boolean('is_paid');
             $table->date('started_date');
+            $table->date('ended_date');
             $table->unsignedInteger('total_amount');
             $table->unsignedInteger('duration');
-            $table->date('ended_date');
             $table->foreignId('office_space_id')->constrained()->cascadeOnDelete();
             $table->softDeletes();
             $table->timestamps();

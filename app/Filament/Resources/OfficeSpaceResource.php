@@ -31,11 +31,6 @@ class OfficeSpaceResource extends Resource
                     ->maxLength(255)
                     ->required(),
 
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255)
-                    ->hidden(),
-
                 Forms\Components\FileUpload::make('thumbnail')
                     ->image()
                     ->required(),

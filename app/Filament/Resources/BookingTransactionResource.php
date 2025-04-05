@@ -23,7 +23,46 @@ class BookingTransactionResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                ->maxLength(255)
+                ->required(),
+
+                Forms\Components\TextInput::make('booking_trx_id')
+                ->maxLength(255)
+                ->required(),
+
+                Forms\Components\TextInput::make('phone_number')
+                ->maxLength(255)
+                ->required(),
+
+                Forms\Components\TextInput::make('total_amount')
+                ->numeric()
+                ->prefix('IDR')
+                ->required(),
+
+                Forms\Components\TextInput::make('duration')
+                ->numeric()
+                ->prefix('Days')
+                ->required(),
+
+                Forms\Components\DatePicker::make('started_date')
+                ->required(),
+
+                Forms\Components\DatePicker::make('ended_date')
+                ->required(),
+
+                Forms\Components\Select::make('is_paid')
+                ->options([
+                    true => 'Paid',
+                    false => 'Not Paid',
+                ])
+                ->required(),
+
+                Forms\Components\Select::make('office_space_id')
+                ->relationship('officeSpace', 'name')
+                ->searchable()
+                ->preload()
+                ->required(),
             ]);
     }
 
@@ -31,7 +70,24 @@ class BookingTransactionResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('booking_trx_id')
+                ->searchable(),
+
+                Tables\Columns\TextColumn::make('name')
+                ->searchable(),
+
+                Tables\Columns\TextColumn::make('officeSpace.name'),
+
+                Tables\Columns\TextColumn::make('started_date')
+                ->date(),
+
+                Tables\Columns\IconColumn::make('is_paid')
+                ->boolean()
+                ->trueColor('danger')
+                ->falseColor('success')
+                ->trueIcon('heroicon-o-x-circle')
+                ->falseIcon('heroicon-o-check-circle')
+                ->label('Paid'),
             ])
             ->filters([
                 //
