@@ -30,56 +30,72 @@ class OfficeSpaceResource extends Resource
                     ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
                     ->maxLength(255)
                     ->required(),
+
                 Forms\Components\TextInput::make('slug')
                     ->required()
                     ->maxLength(255)
                     ->hidden(),
+
                 Forms\Components\FileUpload::make('thumbnail')
                     ->image()
                     ->required(),
-                Forms\Components\Textarea::make('address')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('is_open')
-                    ->options([
-                        'true' => 'Open',
-                        'false' => 'Closed'
-                    ])
-                    ->required(),
-                Forms\Components\Select::make('is_full_booked')
-                    ->options([
-                        'true' => 'Full Booked',
-                        'false' => 'Not Full Booked'
-                    ])
-                    ->required(),
-                Forms\Components\TextInput::make('price')
-                    ->live(debounce: 500)
-                    ->afterStateUpdated(function ($set, ?string $state) {
-                        if ($state !== null) {
-                            // Remove any non-numeric characters
-                            $cleanValue = preg_replace('/[^\d]/', '', $state);
 
-                            if (is_numeric($cleanValue)) {
-                                $set('price', number_format((float)$cleanValue, 0, ',', '.'));
-                            }
-                        }
-                    })
-                    ->required()
-                    ->placeholder('Enter price in Rp')
-                    ->prefix('Rp'),
-                Forms\Components\TextInput::make('duration')
-                    ->minValue(0)
-                    ->numeric()
-                    ->suffix('days')
+                Forms\Components\Textarea::make('address')
+                    ->rows(10)
+                    ->cols(20)
                     ->required(),
+
+
                 Forms\Components\Textarea::make('about')
+                    ->rows(10)
+                    ->cols(20)
                     ->required(),
+
+                Forms\Components\Repeater::make('photos')
+                    ->relationship('photos')
+                    ->schema([
+                        Forms\Components\FileUpload::make('photo')
+                            ->image()
+                            ->required(),
+                    ])
+                    ->required(),
+
+                Forms\Components\Repeater::make('benefits')
+                    ->relationship('benefits')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required(),
+                    ])
+                    ->required(),
+
                 Forms\Components\Select::make('city_id')
                     ->relationship('city', 'name')
                     ->searchable()
-                    ->options(function () {
-                        return \App\Models\City::all()->pluck('name', 'id');
-                    })
+                    ->preload()
+                    ->required(),
+
+                Forms\Components\TextInput::make('price')
+                    ->numeric()
+                    ->prefix('IDR')
+                    ->required(),
+
+                Forms\Components\TextInput::make('duration')
+                    ->numeric()
+                    ->prefix('Days')
+                    ->required(),
+
+                Forms\Components\Select::make('is_open')
+                    ->options([
+                        true => 'Open',
+                        false => 'Closed',
+                    ])
+                    ->required(),
+
+                Forms\Components\Select::make('is_full_booked')
+                    ->options([
+                        true => 'Not Available',
+                        false => 'Available',
+                    ])
                     ->required(),
             ]);
     }
@@ -88,10 +104,25 @@ class OfficeSpaceResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+
+                Tables\Columns\ImageColumn::make('thumbnail'),
+
+                Tables\Columns\TextColumn::make('city.name'),
+
+                Tables\Columns\IconColumn::make('is_full_booked')
+                ->boolean()
+                ->trueColor('danger')
+                ->falseColor('success')
+                ->trueIcon('heroicon-o-x-circle')
+                ->falseIcon('heroicon-o-check-circle')
+                ->label('Available'),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('city_id')
+                ->relationship('city', 'name')
+                ->label('City'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
