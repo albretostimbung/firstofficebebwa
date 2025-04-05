@@ -23,7 +23,13 @@ class ApiKeyResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                ->maxLength(255)
+                ->required(),
+
+                Forms\Components\TextInput::make('key')
+                ->maxLength(255)
+                ->required(),
             ]);
     }
 
@@ -31,7 +37,8 @@ class ApiKeyResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                ->searchable(),
             ])
             ->filters([
                 //
