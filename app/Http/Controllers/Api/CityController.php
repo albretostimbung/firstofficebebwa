@@ -10,28 +10,49 @@ use App\Http\Resources\Api\CityResource;
 
 class CityController extends Controller
 {
+    protected function getJsonCacheKey($key)
+    {
+        return 'json_' . $key;
+    }
+
+    protected function cacheJson($key, $minutes, $callback)
+    {
+        $jsonKey = $this->getJsonCacheKey($key);
+
+        return Cache::remember($jsonKey, $minutes, function () use ($callback) {
+            return json_encode($callback());
+        });
+    }
+
     public function index()
     {
-        return Cache::remember('cities_list', now()->addHours(1), function () {
-            $cities = City::with([
-                'officeSpaces' => function ($query) {
-                    $query->with(['city', 'photos']);
-                }
-            ])->get();
+        $json = $this->cacheJson('cities_list', 60, function () {
+            $cities = City::withCount('officeSpaces')
+                ->with([
+                    'officeSpaces' => function ($query) {
+                        $query->with(['city', 'photos']);
+                    }
+                ])
+                ->get();
 
-            return CityResource::collection($cities);
+            return CityResource::collection($cities)->toArray(request());
         });
+
+        return response()->json(json_decode($json, true));
     }
 
     public function show(City $city)
     {
-        return Cache::remember('city_' . $city->id, now()->addHours(1), function () use ($city) {
+        $json = $this->cacheJson('city_' . $city->id, 60, function () use ($city) {
             $city->load([
                 'officeSpaces.city',
                 'officeSpaces.photos'
             ]);
+            $city->loadCount('officeSpaces');
 
-            return CityResource::make($city);
+            return CityResource::make($city)->toArray(request());
         });
+
+        return response()->json(json_decode($json, true));
     }
 }
