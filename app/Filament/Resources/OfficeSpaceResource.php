@@ -79,6 +79,11 @@ class OfficeSpaceResource extends Resource
                     ->prefix('Days')
                     ->required(),
 
+                Forms\Components\TextInput::make('rating')
+                    ->numeric()
+                    ->maxValue(5)
+                    ->required(),
+
                 Forms\Components\Select::make('is_open')
                     ->options([
                         true => 'Open',
@@ -107,17 +112,17 @@ class OfficeSpaceResource extends Resource
                 Tables\Columns\TextColumn::make('city.name'),
 
                 Tables\Columns\IconColumn::make('is_full_booked')
-                ->boolean()
-                ->trueColor('danger')
-                ->falseColor('success')
-                ->trueIcon('heroicon-o-x-circle')
-                ->falseIcon('heroicon-o-check-circle')
-                ->label('Available'),
+                    ->boolean()
+                    ->trueColor('danger')
+                    ->falseColor('success')
+                    ->trueIcon('heroicon-o-x-circle')
+                    ->falseIcon('heroicon-o-check-circle')
+                    ->label('Available'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('city_id')
-                ->relationship('city', 'name')
-                ->label('City'),
+                    ->relationship('city', 'name')
+                    ->label('City'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

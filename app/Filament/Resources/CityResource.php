@@ -12,12 +12,19 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Cache;
 
 class CityResource extends Resource
 {
     protected static ?string $model = City::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
+
+    public static function clearCache(City $city): void
+    {
+        Cache::forget('city_' . $city->id);
+        Cache::forget('cities_list');
+    }
 
     public static function form(Form $form): Form
     {

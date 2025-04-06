@@ -19,6 +19,7 @@ class OfficeSpace extends Model
         'is_full_booked',
         'price',
         'duration',
+        'rating',
         'about',
         'city_id',
         'slug',
