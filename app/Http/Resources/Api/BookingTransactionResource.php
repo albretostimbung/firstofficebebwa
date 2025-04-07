@@ -24,7 +24,7 @@ class BookingTransactionResource extends JsonResource
             'total_amount' => $this->total_amount,
             'started_date' => $this->started_date,
             'ended_date' => $this->ended_date,
-            'officeSpace' => $this->whenLoaded('officeSpace'),
+            'officeSpace' => OfficeSpaceResource::make($this->whenLoaded('officeSpace')),
         ];
     }
 }

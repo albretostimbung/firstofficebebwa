@@ -19,5 +19,4 @@ Route::middleware('api-key')->group(function () {
 
     Route::post('/booking-transaction', [BookingTransactionController::class, 'store']);
     Route::post('/check-booking', [BookingTransactionController::class, 'bookingDetails']);
-
 });

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\BookingTransactionResource\Pages;
 
-use App\Filament\Resources\BookingTransactionResource;
 use Filament\Actions;
+use App\Models\BookingTransaction;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\BookingTransactionResource;
 
 class EditBookingTransaction extends EditRecord
 {
@@ -13,7 +15,16 @@ class EditBookingTransaction extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->before(function (BookingTransaction $bookingTransaction) {
+                BookingTransactionResource::clearCache($bookingTransaction);
+            }),
         ];
+    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $bookingTransaction = parent::handleRecordUpdate($record, $data);
+        BookingTransactionResource::clearCache($bookingTransaction);
+        return $bookingTransaction;
     }
 }
